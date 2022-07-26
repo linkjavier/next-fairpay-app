@@ -16,27 +16,43 @@ class OrderRepository {
             throw(error)
         }
 
-        console.log("create Method");
-        console.log(json)
-
         let id = json['id']
-        const ref = id === undefined ? doc(collection(firestore, "orders")) : doc(collection(firestore, "orders"), id)
-        const docSnap = await getDoc(await ref);
+        const docRef = id === undefined ? doc(collection(firestore, "orders")) : doc(firestore, "orders", id)
+        let entity = ''
 
-        // if(docSnap.exists){
-        //     const error = new Error("Document already exist")
-        //     error.code = constants.HTTP_ANSWER_CODES_400_BAD_REQUEST
-        //     throw(error)
-        // }
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const error = new Error("Document already exist")
+            error.code = constants.HTTP_ANSWER_CODES_400_BAD_REQUEST
+            throw(error)
+        }
+        else {
+
+            // Inyection of dates and False to IsDeleted
+            const date = new Date()
+            json[constants.COLLECTION_ORDERS_FIELD_CREATED_AT] = date
+            json[constants.COLLECTION_ORDERS_FIELD_MODIFIED_AT] = date
+            json[constants.COLLECTION_ORDERS_FIELD_IS_DELETED] = false
+
+            // doc.data() will be undefined in this case
+            console.log("No existe la Orden, es posible crearla");
+            entity = OrderEntity.fromJson(json)
+
+            if(entity.id === null || entity.id === undefined || entity.id === '')
+            entity.id = docSnap.id
 
 
-        setDoc(ref, json);
+            await setDoc(docRef, json);
+            const answer = OrderEntity.fromSnapshot(await getDoc(docRef))
 
+            console.log(answer)
+    
+            return answer
+        }
 
-        // let id = json['id']
-        // const doc = id === undefined ? collection.doc() : collection.doc(id)
-        // let entity = ''
-
+        
+  
     }
 
     async getWithAdminId(OrderName) {

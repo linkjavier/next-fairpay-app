@@ -42,7 +42,7 @@ const OrdersList = () => {
                     <div>
                         <div className="flex">
                             <div className=" ">Descripción:</div>
-                            <div className=" bg-gray-400 ml-2">{order.detail}</div>
+                            <div className="ml-2">{order.details}</div>
                         </div>
                         <div className="flex">
                             <div className=" ">ID:</div>

@@ -12,9 +12,6 @@ const orderCreationV1 = async (req, res) => {
     console.log(`uuid[${req}] Executing /api${name}`)
     try {
         const json = req.body
-        console.log(json)
-        console.log(orderRepository)
-
         const entity = await orderRepository.create(json)
 
         if (!entity) throw(new Error(`/api${name}: ERROR obtaining entity`))
